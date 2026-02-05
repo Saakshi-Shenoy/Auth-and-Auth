@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const { loginLimiter } = require("../middleware/rateLimit");
 const { verifyEmail } = require("../controllers/auth.controller");
+const RefreshToken = require("../models/RefreshToken");
 
 const {
   register,
@@ -17,9 +18,13 @@ const {
   resetPassword
 } = require("../controllers/auth.controller");
 
+const {
+  generateAccessToken,
+  generateRefreshToken
+} = require("../utils/token");
 
 router.post("/register", register);
-router.post("/login", loginLimiter, login);
+router.post("/login",loginLimiter, login);
 router.post("/refresh", refreshAccessToken);
 router.post("/logout", logout);
 router.post("/logout-all", logoutAll);
@@ -59,13 +64,11 @@ router.post("/reset-password/:token", resetPassword);
 
 
 //test protected route
-// const { protect } = require("../middleware/auth.middleware");
+const { protect } = require("../middleware/auth.middleware");
 
-// router.get("/me", protect, (req, res) => {
-//   res.json({
-//     message: "You are authorized",
-//     userId: req.user.userId
-//   });
-// });
+router.get("/me", protect, (req, res) => {
+  res.json(req.user);
+});
+
 
 module.exports = router;

@@ -12,6 +12,24 @@ router.get("/users", protect, authorize("admin"), async (req, res) => {
   res.json(users);
 });
 
+// Admin Dashboard Stats
+router.get(
+  "/stats",
+  protect,
+  authorize("admin"),
+  async (req, res) => {
+    const totalUsers = await User.countDocuments();
+    const totalAdmins = await User.countDocuments({ role: "admin" });
+    const totalManagers = await User.countDocuments({ role: "manager" });
+
+    res.json({
+      totalUsers,
+      totalAdmins,
+      totalManagers
+    });
+  }
+);
+
 // Admin-only: change user role
 router.put("/users/:id/role", protect, authorize("admin"), async (req, res) => {
   const { role } = req.body;
@@ -38,5 +56,21 @@ router.get(
     res.json(logs);
   }
 );
+
+// Recent Login Activity
+router.get(
+  "/recent-logins",
+  protect,
+  authorize("admin"),
+  async (req, res) => {
+    const logs = await AuditLog.find({ action: "LOGIN" })
+      .populate("user", "email role")
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    res.json(logs);
+  }
+);
+
 
 module.exports = router;
