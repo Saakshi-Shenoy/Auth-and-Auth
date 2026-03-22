@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 exports.generateAccessToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -11,3 +12,11 @@ exports.generateRefreshToken = (userId) => {
     expiresIn: "7d"
   });
 };
+
+
+// token payload { userId } looks like this -
+// {
+//   userId: user._id,
+//   iat: ......,
+//   exp: .........
+// }

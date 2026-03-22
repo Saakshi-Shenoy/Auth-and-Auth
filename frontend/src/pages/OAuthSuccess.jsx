@@ -1,12 +1,14 @@
 import { useEffect, useContext } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import API from "../services/api";
+import useAxios from "../hooks/useAxios";
 
 export default function OAuthSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
+  const api = useAxios();
+
 
   useEffect(() => {
     const handleOAuth = async () => {
@@ -18,11 +20,7 @@ export default function OAuthSuccess() {
       }
 
       // Fetch real user profile
-      const res = await API.get("/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const res = await api.get("/auth/me");
 
       login({
         accessToken: token,
@@ -36,6 +34,7 @@ export default function OAuthSuccess() {
     };
 
     handleOAuth();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, login, navigate]);
 
   return (

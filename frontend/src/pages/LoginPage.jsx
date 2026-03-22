@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import API from "../services/api";
+import useAxios from "../hooks/useAxios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -12,13 +12,15 @@ export default function LoginPage() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const api = useAxios();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
     try {
-      const res = await API.post("/auth/login", {
+      const res = await api.post("/auth/login", {
         email,
         password
       });
